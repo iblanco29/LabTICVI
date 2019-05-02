@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import boto3
 
 cities = pd.read_json("reduced_cities.json")
 
@@ -20,4 +21,15 @@ data_frame = pd.DataFrame({'id': city_id, 'temp': temp, 'hum': humidity})
 
 final_table = data_frame.join(cities.set_index('id'), on='id', how='inner')
 
-print final_table
+print(final_table)
+
+access_key_id = 'ASIAQ5J57O3OLZ7BDHIL'
+secret_access_key = 'ArA4VqYMEYiGSwaj8Jd3brTjdIaHWofO1k21tc2h'
+
+resource = boto3.resource('dynamodb', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key, region_name='us-east-1')
+
+table = resource.Table('tabla1')
+
+for data in final_table:
+    table.put_item(Item=data)
+
